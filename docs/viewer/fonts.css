@@ -1,0 +1,58 @@
+/* Look-alike fonts with the same letter widths as Windows fonts (Liberation, Carlito, Caladea — SIL Open Font License),
+   so text wraps the same way it does on the PC. */
+@font-face { font-family: "Times New Roman"; src: local("Times New Roman"), url("fonts/LiberationSerif-Regular.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: block; }
+@font-face { font-family: "Times"; src: local("Times"), url("fonts/LiberationSerif-Regular.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: block; }
+@font-face { font-family: "Liberation Serif"; src: local("Liberation Serif"), url("fonts/LiberationSerif-Regular.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: block; }
+@font-face { font-family: "Times New Roman"; src: local("Times New Roman"), url("fonts/LiberationSerif-Bold.ttf") format("truetype"); font-weight: bold; font-style: normal; font-display: block; }
+@font-face { font-family: "Times"; src: local("Times"), url("fonts/LiberationSerif-Bold.ttf") format("truetype"); font-weight: bold; font-style: normal; font-display: block; }
+@font-face { font-family: "Liberation Serif"; src: local("Liberation Serif"), url("fonts/LiberationSerif-Bold.ttf") format("truetype"); font-weight: bold; font-style: normal; font-display: block; }
+@font-face { font-family: "Times New Roman"; src: local("Times New Roman"), url("fonts/LiberationSerif-Italic.ttf") format("truetype"); font-weight: normal; font-style: italic; font-display: block; }
+@font-face { font-family: "Times"; src: local("Times"), url("fonts/LiberationSerif-Italic.ttf") format("truetype"); font-weight: normal; font-style: italic; font-display: block; }
+@font-face { font-family: "Liberation Serif"; src: local("Liberation Serif"), url("fonts/LiberationSerif-Italic.ttf") format("truetype"); font-weight: normal; font-style: italic; font-display: block; }
+@font-face { font-family: "Times New Roman"; src: local("Times New Roman"), url("fonts/LiberationSerif-BoldItalic.ttf") format("truetype"); font-weight: bold; font-style: italic; font-display: block; }
+@font-face { font-family: "Times"; src: local("Times"), url("fonts/LiberationSerif-BoldItalic.ttf") format("truetype"); font-weight: bold; font-style: italic; font-display: block; }
+@font-face { font-family: "Liberation Serif"; src: local("Liberation Serif"), url("fonts/LiberationSerif-BoldItalic.ttf") format("truetype"); font-weight: bold; font-style: italic; font-display: block; }
+@font-face { font-family: "Arial"; src: local("Arial"), url("fonts/LiberationSans-Regular.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: block; }
+@font-face { font-family: "Helvetica"; src: local("Helvetica"), url("fonts/LiberationSans-Regular.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: block; }
+@font-face { font-family: "Liberation Sans"; src: local("Liberation Sans"), url("fonts/LiberationSans-Regular.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: block; }
+@font-face { font-family: "Arial MT"; src: local("Arial MT"), url("fonts/LiberationSans-Regular.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: block; }
+@font-face { font-family: "Arial"; src: local("Arial"), url("fonts/LiberationSans-Bold.ttf") format("truetype"); font-weight: bold; font-style: normal; font-display: block; }
+@font-face { font-family: "Helvetica"; src: local("Helvetica"), url("fonts/LiberationSans-Bold.ttf") format("truetype"); font-weight: bold; font-style: normal; font-display: block; }
+@font-face { font-family: "Liberation Sans"; src: local("Liberation Sans"), url("fonts/LiberationSans-Bold.ttf") format("truetype"); font-weight: bold; font-style: normal; font-display: block; }
+@font-face { font-family: "Arial MT"; src: local("Arial MT"), url("fonts/LiberationSans-Bold.ttf") format("truetype"); font-weight: bold; font-style: normal; font-display: block; }
+@font-face { font-family: "Arial"; src: local("Arial"), url("fonts/LiberationSans-Italic.ttf") format("truetype"); font-weight: normal; font-style: italic; font-display: block; }
+@font-face { font-family: "Helvetica"; src: local("Helvetica"), url("fonts/LiberationSans-Italic.ttf") format("truetype"); font-weight: normal; font-style: italic; font-display: block; }
+@font-face { font-family: "Liberation Sans"; src: local("Liberation Sans"), url("fonts/LiberationSans-Italic.ttf") format("truetype"); font-weight: normal; font-style: italic; font-display: block; }
+@font-face { font-family: "Arial MT"; src: local("Arial MT"), url("fonts/LiberationSans-Italic.ttf") format("truetype"); font-weight: normal; font-style: italic; font-display: block; }
+@font-face { font-family: "Arial"; src: local("Arial"), url("fonts/LiberationSans-BoldItalic.ttf") format("truetype"); font-weight: bold; font-style: italic; font-display: block; }
+@font-face { font-family: "Helvetica"; src: local("Helvetica"), url("fonts/LiberationSans-BoldItalic.ttf") format("truetype"); font-weight: bold; font-style: italic; font-display: block; }
+@font-face { font-family: "Liberation Sans"; src: local("Liberation Sans"), url("fonts/LiberationSans-BoldItalic.ttf") format("truetype"); font-weight: bold; font-style: italic; font-display: block; }
+@font-face { font-family: "Arial MT"; src: local("Arial MT"), url("fonts/LiberationSans-BoldItalic.ttf") format("truetype"); font-weight: bold; font-style: italic; font-display: block; }
+@font-face { font-family: "Courier New"; src: local("Courier New"), url("fonts/LiberationMono-Regular.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: block; }
+@font-face { font-family: "Courier"; src: local("Courier"), url("fonts/LiberationMono-Regular.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: block; }
+@font-face { font-family: "Liberation Mono"; src: local("Liberation Mono"), url("fonts/LiberationMono-Regular.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: block; }
+@font-face { font-family: "Courier New"; src: local("Courier New"), url("fonts/LiberationMono-Bold.ttf") format("truetype"); font-weight: bold; font-style: normal; font-display: block; }
+@font-face { font-family: "Courier"; src: local("Courier"), url("fonts/LiberationMono-Bold.ttf") format("truetype"); font-weight: bold; font-style: normal; font-display: block; }
+@font-face { font-family: "Liberation Mono"; src: local("Liberation Mono"), url("fonts/LiberationMono-Bold.ttf") format("truetype"); font-weight: bold; font-style: normal; font-display: block; }
+@font-face { font-family: "Courier New"; src: local("Courier New"), url("fonts/LiberationMono-Italic.ttf") format("truetype"); font-weight: normal; font-style: italic; font-display: block; }
+@font-face { font-family: "Courier"; src: local("Courier"), url("fonts/LiberationMono-Italic.ttf") format("truetype"); font-weight: normal; font-style: italic; font-display: block; }
+@font-face { font-family: "Liberation Mono"; src: local("Liberation Mono"), url("fonts/LiberationMono-Italic.ttf") format("truetype"); font-weight: normal; font-style: italic; font-display: block; }
+@font-face { font-family: "Courier New"; src: local("Courier New"), url("fonts/LiberationMono-BoldItalic.ttf") format("truetype"); font-weight: bold; font-style: italic; font-display: block; }
+@font-face { font-family: "Courier"; src: local("Courier"), url("fonts/LiberationMono-BoldItalic.ttf") format("truetype"); font-weight: bold; font-style: italic; font-display: block; }
+@font-face { font-family: "Liberation Mono"; src: local("Liberation Mono"), url("fonts/LiberationMono-BoldItalic.ttf") format("truetype"); font-weight: bold; font-style: italic; font-display: block; }
+@font-face { font-family: "Calibri"; src: local("Calibri"), url("fonts/Carlito-Regular.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: block; }
+@font-face { font-family: "Carlito"; src: local("Carlito"), url("fonts/Carlito-Regular.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: block; }
+@font-face { font-family: "Calibri"; src: local("Calibri"), url("fonts/Carlito-Bold.ttf") format("truetype"); font-weight: bold; font-style: normal; font-display: block; }
+@font-face { font-family: "Carlito"; src: local("Carlito"), url("fonts/Carlito-Bold.ttf") format("truetype"); font-weight: bold; font-style: normal; font-display: block; }
+@font-face { font-family: "Calibri"; src: local("Calibri"), url("fonts/Carlito-Italic.ttf") format("truetype"); font-weight: normal; font-style: italic; font-display: block; }
+@font-face { font-family: "Carlito"; src: local("Carlito"), url("fonts/Carlito-Italic.ttf") format("truetype"); font-weight: normal; font-style: italic; font-display: block; }
+@font-face { font-family: "Calibri"; src: local("Calibri"), url("fonts/Carlito-BoldItalic.ttf") format("truetype"); font-weight: bold; font-style: italic; font-display: block; }
+@font-face { font-family: "Carlito"; src: local("Carlito"), url("fonts/Carlito-BoldItalic.ttf") format("truetype"); font-weight: bold; font-style: italic; font-display: block; }
+@font-face { font-family: "Cambria"; src: local("Cambria"), url("fonts/Caladea-Regular.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: block; }
+@font-face { font-family: "Caladea"; src: local("Caladea"), url("fonts/Caladea-Regular.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: block; }
+@font-face { font-family: "Cambria"; src: local("Cambria"), url("fonts/Caladea-Bold.ttf") format("truetype"); font-weight: bold; font-style: normal; font-display: block; }
+@font-face { font-family: "Caladea"; src: local("Caladea"), url("fonts/Caladea-Bold.ttf") format("truetype"); font-weight: bold; font-style: normal; font-display: block; }
+@font-face { font-family: "Cambria"; src: local("Cambria"), url("fonts/Caladea-Italic.ttf") format("truetype"); font-weight: normal; font-style: italic; font-display: block; }
+@font-face { font-family: "Caladea"; src: local("Caladea"), url("fonts/Caladea-Italic.ttf") format("truetype"); font-weight: normal; font-style: italic; font-display: block; }
+@font-face { font-family: "Cambria"; src: local("Cambria"), url("fonts/Caladea-BoldItalic.ttf") format("truetype"); font-weight: bold; font-style: italic; font-display: block; }
+@font-face { font-family: "Caladea"; src: local("Caladea"), url("fonts/Caladea-BoldItalic.ttf") format("truetype"); font-weight: bold; font-style: italic; font-display: block; }

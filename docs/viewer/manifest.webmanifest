@@ -1,0 +1,11 @@
+{
+  "name": "PageStudio Viewer",
+  "short_name": "PageStudio",
+  "description": "Shows Page Studio (.pgs) and Microsoft Publisher (.pub) publications.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F4F6F6",
+  "theme_color": "#005C61",
+  "icons": [{ "src": "icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any" }]
+}

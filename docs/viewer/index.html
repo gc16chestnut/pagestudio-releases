@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>PageStudio Viewer</title>
+<meta name="theme-color" content="#005C61">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PageStudio">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="viewer.css">
+</head>
+<body class="home">
+  <!-- Top bar -->
+  <header id="bar">
+    <button class="mark" id="b-home" aria-label="Home"><span>P</span></button>
+    <div class="title"><div id="t-name">PageStudio Viewer</div><div id="t-sub"></div></div>
+    <div class="actions">
+      <button class="ib doc-only" id="b-find" aria-label="Find"></button>
+      <button class="ib doc-only" id="b-pages" aria-label="Pages"></button>
+      <button class="ib doc-only" id="b-print" aria-label="Print"></button>
+      <button class="ib" id="b-more" aria-label="More"></button>
+    </div>
+  </header>
+  <div id="findbar" hidden>
+    <input id="f-q" type="search" placeholder="Find in this publication" autocomplete="off" enterkeyhint="search">
+    <span id="f-count"></span>
+    <button class="ib" id="f-prev" aria-label="Previous"></button>
+    <button class="ib" id="f-next" aria-label="Next"></button>
+    <button class="ib" id="f-close" aria-label="Close"></button>
+  </div>
+  <div id="fontwarn" hidden></div>
+
+  <!-- Home -->
+  <main id="home">
+    <section class="hero">
+      <img src="icon.png" alt="" class="hero-icon">
+      <h1>PageStudio Viewer</h1>
+      <p>Open Page Studio (.pgs) and Microsoft Publisher (.pub) publications.</p>
+      <button class="btn big" id="h-open"></button>
+      <input type="file" id="h-file" accept=".pgs,.pub,application/x-mspublisher,application/octet-stream,application/json" hidden>
+    </section>
+    <section class="recent">
+      <div class="sect-head"><h2>Recent</h2><button class="link" id="h-clear" hidden>Clear list</button></div>
+      <div id="r-list"></div>
+      <div class="tip" id="h-tip"></div>
+    </section>
+  </main>
+
+  <!-- Document -->
+  <div id="scroller" hidden><div id="pages"></div></div>
+  <div id="pagechip" hidden><button id="pc-prev" class="ib sm" aria-label="Previous page"></button><span id="pc-text"></span><button id="pc-next" class="ib sm" aria-label="Next page"></button><span class="sep"></span><button id="pc-fit" class="chip-btn"></button></div>
+
+  <div id="sheet-root"></div>
+  <div id="toast" hidden></div>
+  <div id="busy" hidden><div class="spin"></div><div id="busy-t">Opening…</div></div>
+  <div id="print-root"></div>
+
+  <script src="lib/pubreader.bundle.js"></script>
+  <script src="lib/EMFJS.bundle.min.js"></script>
+  <script src="lib/WMFJS.bundle.min.js"></script>
+  <script src="icons.js"></script>
+  <script src="core.js"></script>
+  <script src="effects.js"></script>
+  <script src="handwriting.js"></script>
+  <script src="pubbridge.js"></script>
+  <script src="viewer.js"></script>
+</body>
+</html>

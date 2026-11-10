@@ -164,3 +164,5 @@ body.fullscreen #bar, body.fullscreen #findbar, body.fullscreen #fontwarn { disp
 .src-icon.gen { display: grid; place-items: center; background: var(--teal-soft); color: var(--teal); }
 .src-t { display: flex; flex-direction: column; min-width: 0; }
 .src-t small { color: var(--ink-3); font-size: 12.5px; margin-top: 1px; }
+
+.r-ico { width: 46px; height: 46px; flex: none; object-fit: contain; }

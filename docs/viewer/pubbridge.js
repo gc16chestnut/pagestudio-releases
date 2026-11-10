@@ -1,4 +1,4 @@
-// Page Studio — Publisher bridge (renderer side): opens Publisher (.pub) files as Page Studio documents. (Page Studio
+// PageStudio — Publisher bridge (renderer side): opens Publisher (.pub) files as PageStudio documents. (PageStudio
 // no longer writes .pub files.)
 'use strict';
 (function () {
@@ -93,7 +93,7 @@
     return { dataUrl: c.toDataURL('image/png'), pad };
   }
 
-  // ------------------------------------------------------------------ export (Page Studio → .pub)
+  // ------------------------------------------------------------------ export (PageStudio → .pub)
   /**
    * Effects Publisher can't do (glow, reflections, soft edges, bevels, 3-D, picture corrections, gradients…):
    * the object goes into the .pub file as a picture that looks exactly the same.
@@ -120,7 +120,7 @@
 
   PubBridge.flattenObject = (o, doc) => flattenObject(o, doc);
 
-  // ------------------------------------------------------------------ import (.pub → Page Studio)
+  // ------------------------------------------------------------------ import (.pub → PageStudio)
   const baseFontOf = (text) => {
     for (const p of (text && text.paras) || []) for (const r of p.runs || []) {
       if (r.font) return { family: r.font, size: r.size || 12, color: r.color || '#000000' };
@@ -147,7 +147,7 @@
   const lineHeightOf = (text) => {
     const f = baseFontOf(text);
     const n = naturalLine(f.family);
-    return n > 1.2 ? 1.2 : 'normal';
+    return n > 1.225 ? 1.2 : 'normal';
   };
   function placeholderPicture(w, h) {
     const c = document.createElement('canvas');
@@ -248,7 +248,7 @@
     host.remove();
   }
 
-  // Publisher shadows are measured on the page; Page Studio's turn with the object, so turn them back
+  // Publisher shadows are measured on the page; PageStudio's turn with the object, so turn them back
   const shadowFx = (s) => {
     if (!s.shadow) return null;
     const r = -((s.rotation || 0) * Math.PI) / 180;
@@ -332,6 +332,7 @@
         if (made && s.groupId) made.groupId = s.groupId;
         if (made && s.shadow && made.type !== 'line') made.effects = Object.assign({}, made.effects || {}, shadowFx(s));
         // An object whose own layout flags are present but lack the wrap bits doesn't push text aside (e.g. a logo under a heading)
+        if (made && s.borderArt) { made.borderArt = s.borderArt; if (s.borderArt.type === 'pub' && made.stroke) made.stroke = 'transparent'; }   // the pattern replaces the plain line; its width still insets the text
         if (made && s.layoutFlags != null && (s.layoutFlags & 3) !== 3 && made.type !== 'text') made.wrap = 'none';
         if (made && s.text && (s.text.wrapAround === false || (s.text.wrapAround == null && s.text.noWrap))) made.wrapText = false;
       } catch (e) {
@@ -506,7 +507,7 @@
   }
 
   /**
-   * Tabbed lists (a name, tabs, then a second column). Publisher and Page Studio don't always agree
+   * Tabbed lists (a name, tabs, then a second column). Publisher and PageStudio don't always agree
    * on whether text that ends right at a tab stop skips it, so one line can end up a whole stop
    * further over than the rest. Find the column most lines line up on and take out the extra tab.
    */

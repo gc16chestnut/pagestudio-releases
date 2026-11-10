@@ -1,7 +1,7 @@
 {
   "name": "PageStudio Viewer",
   "short_name": "PageStudio",
-  "description": "Shows Page Studio (.pgs) and Microsoft Publisher (.pub) publications.",
+  "description": "Shows PageStudio (.pgs) and Microsoft Publisher (.pub) publications.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

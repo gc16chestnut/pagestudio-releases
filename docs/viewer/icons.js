@@ -1,4 +1,4 @@
-// Small line-icon set (24×24, stroke-based) drawn for Page Studio.
+// Small line-icon set (24×24, stroke-based) drawn for PageStudio.
 'use strict';
 (function () {
   const P = {
@@ -189,6 +189,7 @@
     picStyles: '<rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="4"/><rect x="3" y="13" width="8" height="8" rx="1" stroke-width="2.6"/><rect x="13" y="13" width="8" height="8" rx="1" stroke-dasharray="2 1"/>',
     pilcrow: '<path d="M14 4v16M18 4v16M18 4h-7a4 4 0 0 0 0 8h3"/>',
     sortAZ: '<path d="M4 11l2.5-7 2.5 7M4.8 9h3.4M4 14h5l-5 6h5"/><path d="M17 4v16M13.5 16.5L17 20l3.5-3.5"/>',
+    sortZA: '<path d="M4 20l2.5-7 2.5 7M4.8 18h3.4M4 4h5l-5 6h5"/><path d="M17 4v16M13.5 16.5L17 20l3.5-3.5"/>',
     placeholder: '<rect x="3" y="4" width="18" height="16" rx="2" stroke-dasharray="3 2"/><circle cx="9" cy="10" r="1.6"/><path d="m6 17 4-4 3 3 2-2 3 3"/>',
     prevBox: '<rect x="3" y="5" width="8" height="14" rx="1" stroke-dasharray="2 1.5"/><rect x="13" y="5" width="8" height="14" rx="1"/><path d="M9 10 6 12l3 2"/>',
     qr: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M5.5 5.5h2v2h-2zM16.5 5.5h2v2h-2zM5.5 16.5h2v2h-2z" fill="currentColor"/><path d="M14 14h3v3h-3zM18 18h3v3M14 20v1M21 14v2"/>',

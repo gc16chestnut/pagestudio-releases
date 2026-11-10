@@ -1,4 +1,4 @@
-// Page Studio — shared document model + rendering (used by the editor and the print/export view)
+// PageStudio — shared document model + rendering (used by the editor and the print/export view)
 'use strict';
 (function () {
   const PS = (window.PS = window.PS || {});
@@ -406,6 +406,39 @@
     }
   };
 
+  /**
+   * Custom tab stops (Publisher stores them on the paragraph, in points from the left edge of the text). Each tab
+   * becomes a gap that ends at the next stop, so write-in lines and dot leaders reach as far as they do in Publisher.
+   * Needs the text on screen to measure, so it is placed off to the side for a moment.
+   */
+  PS.applyTabStops = (content, outer) => {
+    const paras = content.querySelectorAll('p[data-tabs]');
+    if (!paras.length || !document.body) return;
+    const host = outer || content;
+    const parent = host.parentNode, next = host.nextSibling;
+    const holder = document.createElement('div');
+    holder.style.cssText = 'position:absolute;left:-99999px;top:0;visibility:hidden';
+    holder.appendChild(host);
+    document.body.appendChild(holder);
+    try {
+      const origin = content.getBoundingClientRect().left + (parseFloat(getComputedStyle(content).paddingLeft) || 0);
+      const scale = content.offsetWidth ? content.getBoundingClientRect().width / content.offsetWidth : 1;
+      for (const p of paras) {
+        const stops = p.dataset.tabs.split(',').map(Number).filter(n => n > 0).sort((a, b) => a - b);
+        for (const sp of p.querySelectorAll('.ps-tab')) {
+          sp.style.display = 'inline-block'; sp.style.whiteSpace = 'pre'; sp.style.width = '0px'; sp.style.marginLeft = '0px';
+          const x = (sp.getBoundingClientRect().left - origin) / scale / PS.PX_PER_PT;
+          const stop = stops.find(t => t > x + 0.5);
+          if (stop == null) { sp.style.display = ''; sp.style.width = ''; sp.style.whiteSpace = ''; sp.style.marginLeft = '-0.08em'; continue; }
+          sp.style.width = (stop - x) + 'pt';
+        }
+      }
+    } finally {
+      if (parent) parent.insertBefore(host, next); else host.remove();
+      holder.remove();
+    }
+  };
+
   PS.sanitizeHtml = (html) => {
     const tpl = document.createElement('template');
     tpl.innerHTML = String(html || '');
@@ -522,6 +555,21 @@
       // An object reaching past the bottom of the text stops just short of it, so it doesn't count as overflow
       const x2 = Math.min(ax + aw, b.x + b.w + gap), y2 = Math.min(ay + ah - 1, b.y + b.h + vgap);
       if (x2 - x1 < 1 || y2 - y1 < 2) continue;
+      // Top and Bottom: text stops above the object and carries on below it
+      if (e.wrap === 'topBottom') { out.push({ side: 'left', top: y1 - ay, height: y2 - y1, width: aw }); continue; }
+      // Tight around an oval: the text follows its curve in thin bands
+      if (e.wrap === 'tight' && e.type === 'shape' && /ellipse|circle|oval/i.test(e.kind || '') && !e.rotation) {
+        const cx = b.x + b.w / 2, cy = b.y + b.h / 2, rx = b.w / 2 + gap, ry = b.h / 2 + vgap, step = 6;
+        const bands = [];
+        for (let y = Math.max(ay, cy - ry); y < Math.min(ay + ah - 1, cy + ry); y += step) {
+          const ym = Math.min(cy + ry, y + step / 2), t = (ym - cy) / ry, half = rx * Math.sqrt(Math.max(0, 1 - t * t));
+          const bx1 = Math.max(ax, cx - half), bx2 = Math.min(ax + aw, cx + half);
+          if (bx2 - bx1 < 1) continue;
+          const lr = bx1 - ax, rr = ax + aw - bx2, sd = lr > rr ? 'right' : 'left';
+          bands.push({ side: sd, top: y - ay, height: step, width: Math.max(lr, rr) < 36 ? aw : (sd === 'left' ? bx2 - ax : ax + aw - bx1) });
+        }
+        if (bands.length) { out.push(...bands); continue; }
+      }
       // Push text to the side with more room; if neither side leaves room, text goes below
       const leftRoom = x1 - ax, rightRoom = ax + aw - x2;
       const side = leftRoom > rightRoom ? 'right' : 'left';
@@ -531,7 +579,7 @@
         width: full ? aw : (side === 'left' ? x2 - ax : ax + aw - x1),
       });
     }
-    return out.sort((a, b) => a.top - b.top);
+    return out.sort((a, b) => a.top - b.top || 0);
   };
 
   function exclusionHtml(ex) {
@@ -586,7 +634,7 @@
     const pad = o.padding || [0, 0, 0, 0];
     if (o.textDirection === 'vertical') return (c.scrollWidth * z) / Math.max(0.5, (o.w - pad[1] - pad[3]) * PS.PX_PER_PT);
     // Text may run into the bottom margin before it counts as not fitting (it's still shown there), like Publisher
-    const avail = Math.max(0.5, (o.h - pad[0]) * PS.PX_PER_PT);
+    const avail = Math.max(0.5, (o.h - pad[0] - (pad[2] || 0)) * PS.PX_PER_PT);   // a line must fit above the bottom margin (Publisher)
     return (c.scrollHeight * z) / avail;
   };
 
@@ -637,7 +685,26 @@
       content.dataset.shrink = String(o.shrinkScale);
     }
     content.innerHTML = o.html || '';
+    // A paragraph whose letters are all smaller than the box's font would still get a line as tall as the box's size, leaving
+    // small text sitting low in the box. Size the paragraph to its largest letters so the line fits them.
+    let blocksSeen = 0, blocksSized = 0;
+    content.querySelectorAll(':scope > p, :scope > div').forEach((p) => {
+      blocksSeen++;
+      if (p.style.fontSize) return;
+      let max = 0, any = false;
+      const w = document.createTreeWalker(p, NodeFilter.SHOW_TEXT);
+      for (let n = w.nextNode(); n; n = w.nextNode()) {
+        if (!n.data.replace(/[\u200b\s]/g, '')) continue;
+        any = true;
+        let size = f.size;
+        for (let e = n.parentElement; e && e !== p; e = e.parentElement) { if (e.style.fontSize) { const m = /^([\d.]+)pt$/.exec(e.style.fontSize); size = m ? parseFloat(m[1]) : f.size; break; } }
+        if (size > max) max = size;
+      }
+      if (any && max > 0 && max < f.size) { p.style.fontSize = max + 'pt'; blocksSized++; }
+    });
+    if (blocksSeen && blocksSized === blocksSeen) content.style.minHeight = '0';
     PS.fixTabs(content);
+    PS.applyTabStops(content, outer);
     if (exclusions && exclusions.length) {
       const wrap = document.createElement('div');
       wrap.className = 'ps-wrap-holder';
@@ -707,6 +774,14 @@
     return out;
   };
 
+  // Compound lines (double, thick-thin, thin-thick, triple): several thin parallel strokes that together are as wide as the line weight
+  const COMPOUND = { double: [[-1 / 3, 1 / 3], [1 / 3, 1 / 3]], thickThin: [[-0.25, 0.5], [0.375, 0.25]], thinThick: [[-0.375, 0.25], [0.25, 0.5]], triple: [[-0.4, 0.2], [0, 0.2], [0.4, 0.2]] };
+  const compoundLines = (o, x1, y1, x2, y2, sw) => {
+    const parts = COMPOUND[o.compound];
+    if (!parts) return '';
+    const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1, nx = dy / len, ny = -dx / len;
+    return parts.map(([off, wf]) => `<line x1="${x1 + nx * off * sw}" y1="${y1 + ny * off * sw}" x2="${x2 + nx * off * sw}" y2="${y2 + ny * off * sw}" stroke="${o.stroke}" stroke-width="${sw * wf}" stroke-linecap="butt" stroke-dasharray="${dashArray(o.dash, sw * wf)}"/>`).join('');
+  };
   PS.renderObject = (o, opts) => {
     // Handwriting with mail-merge fields: every recipient's copy is written a little differently
     if (o.hw && opts.merge && o.id !== opts.mergeSkip && PS.hasFields(o.html) && window.HW) { const k = HW.recordKey(opts.merge); if (k) o = Object.assign({}, o, { __hwVariant: (o.__hwVariant || '') + k }); }
@@ -733,8 +808,8 @@
       el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible;display:block">
         <defs>${o.arrowStart ? mk('as' + mid, true) : ''}${o.arrowEnd ? mk('ae' + mid) : ''}</defs>
         <line class="ps-hit" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="transparent" stroke-width="${Math.max(sw, 8)}" style="pointer-events:stroke"/>
-        <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${o.stroke}" stroke-width="${sw}" stroke-linecap="${o.dash === 'dot' ? 'round' : 'butt'}"
-          stroke-dasharray="${dashArray(o.dash, sw)}" ${o.arrowStart ? `marker-start="url(#as${mid})"` : ''} ${o.arrowEnd ? `marker-end="url(#ae${mid})"` : ''}/>
+        ${compoundLines(o, x1, y1, x2, y2, sw) || `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${o.stroke}" stroke-width="${sw}" stroke-linecap="${o.dash === 'dot' ? 'round' : 'butt'}"
+          stroke-dasharray="${dashArray(o.dash, sw)}" ${o.arrowStart ? `marker-start="url(#as${mid})"` : ''} ${o.arrowEnd ? `marker-end="url(#ae${mid})"` : ''}/>`}
       </svg>`;
       return el;
     }
@@ -777,6 +852,7 @@
       if (o.fill) el.style.background = o.fill;
       const grad = o.fillGradient && window.PSFX ? PSFX.cssGradient(o.fillGradient) : null;
       if (grad) el.style.background = grad;
+      if (o.fillPattern && window.PSFX && PSFX.patternCss) Object.assign(el.style, PSFX.patternCss(o.fillPattern));
       if (o.fillImage && doc.assets && doc.assets[o.fillImage]) Object.assign(el.style, { backgroundImage: `url("${PS.assetUrl(doc, o.fillImage)}")`, backgroundSize: 'cover', backgroundPosition: 'center' });
       if (o.stroke && o.strokeWidth) {
         el.style.outline = `${o.strokeWidth}pt ${/dash/.test(o.dash || '') ? 'dashed' : /dot/.test(o.dash || '') ? 'dotted' : 'solid'} ${o.stroke}`;
@@ -824,7 +900,7 @@
       }
       if (o.stroke && o.strokeWidth) {
         const b = document.createElement('div');
-        Object.assign(b.style, { position: 'absolute', inset: '0', border: `${o.strokeWidth}pt solid ${o.stroke}`, borderRadius: corner, pointerEvents: 'none' });
+        Object.assign(b.style, { position: 'absolute', inset: '0', border: `${o.strokeWidth}pt ${o.compound && o.strokeWidth >= 2.5 ? 'double' : 'solid'} ${o.stroke}`, borderRadius: corner, pointerEvents: 'none' });
         el.appendChild(b);
       }
       if (!doc.assets[o.asset]) {
@@ -1064,7 +1140,7 @@
     document.body.append(d);
     const h = d.getBoundingClientRect().height / 100;
     d.remove();
-    const v = h > 0.5 ? Math.min(1.2, h) : 1.2;
+    const v = h > 0.5 ? (h <= 1.225 ? h : 1.2) : 1.2;   // Calibri's own line is 1.2207; only the taller Pro fonts are held to 1.2
     naturalCache.set(family, v);
     return v;
   };
@@ -1179,7 +1255,7 @@
         const txt = PS.escapeHtml(text).replace(/\u000b|\n/g, '<br>');
         inner += `<span style="${runCssP(r)}">${txt}</span>`;
       }
-      out.push(`<p${ps.length ? ` style="${ps.join('; ')}"` : ''}>${inner || '<br>'}</p>`);
+      out.push(`<p${ps.length ? ` style="${ps.join('; ')}"` : ''}${p.tabs && p.tabs.length && /\t/.test(inner) ? ` data-tabs="${p.tabs.join(',')}"` : ''}>${inner || '<br>'}</p>`);
     }
     return out.join('') || '<p><br></p>';
   };
@@ -1227,6 +1303,11 @@
   const renderObjectBase = PS.renderObject;
   PS.renderObject = (o, opts) => {
     const el = renderObjectBase(o, opts);
+    if (o.borderArt && window.PSFX && PSFX.borderArtCss && o.type !== 'line') {
+      const ba = PSFX.borderArtCss(o);
+      if (ba) { const d = document.createElement('div'); Object.assign(d.style, { position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, boxSizing: 'border-box', pointerEvents: 'none', border: ba.width + ' solid transparent', borderImage: ba.img }); d.className = 'ps-borderart'; el.appendChild(d); }
+    }
+    if (o.hidden) el.style.display = 'none';        // hidden from the Selection pane: not drawn, not printed
     return window.PSFX && o.type !== 'line' ? PSFX.apply(el, o) : el;
   };
 })();

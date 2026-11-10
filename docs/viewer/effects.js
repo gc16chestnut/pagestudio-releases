@@ -1,4 +1,4 @@
-// Page Studio — picture and shape effects, picture adjustments and gradient fills.
+// PageStudio — picture and shape effects, picture adjustments and gradient fills.
 // Loaded by the editor and by the print/PDF window, so what you see is what prints.
 //
 // o.effects = { shadow, glow, softEdge, reflection, bevel, rotate3d }   (any object but lines)
@@ -186,7 +186,111 @@
 
   // ------------------------------------------------------------------ gradient and picture fills
   /** SVG paint for a shape: returns { defs, fill } where fill is a color or url(#id). */
+  // BorderArt (Publisher's decorative borders): a motif repeated around the edge of a box, picture or shape
+  const MOTIF = {
+    stars: (c) => `<path d="M4 .8 L5 3 L7.4 3.2 L5.6 4.8 L6.2 7.2 L4 5.9 L1.8 7.2 L2.4 4.8 L.6 3.2 L3 3 Z" fill="${c}"/>`,
+    hearts: (c) => `<path d="M4 7 C-1 3.5 1 .5 3 1.3 C3.6 1.6 3.9 2 4 2.3 C4.1 2 4.4 1.6 5 1.3 C7 .5 9 3.5 4 7 Z" fill="${c}"/>`,
+    crosses: (c) => `<path d="M3.2 .6h1.6v2.2h2.2v1.6H4.8v3H3.2v-3H1V2.8h2.2z" fill="${c}"/>`,
+    diamonds: (c) => `<path d="M4 .6 L7 4 L4 7.4 L1 4Z" fill="${c}"/>`,
+    dots: (c) => `<circle cx="4" cy="4" r="2.2" fill="${c}"/>`,
+    scallops: (c) => `<path d="M0 6 A4 4 0 0 1 8 6" fill="none" stroke="${c}" stroke-width="1.2"/>`,
+    zigzag: (c) => `<path d="M0 6 L2 2 L4 6 L6 2 L8 6" fill="none" stroke="${c}" stroke-width="1.2"/>`,
+    leaves: (c) => `<path d="M1 7 C1 2 4 1 7 1 C7 5 5 7 1 7Z" fill="${c}"/>`,
+    checks: (c) => `<rect x="0" y="0" width="4" height="4" fill="${c}"/><rect x="4" y="4" width="4" height="4" fill="${c}"/>`,
+    stripes: (c) => `<path d="M-1 5 L5 -1 M3 9 L9 3" stroke="${c}" stroke-width="2"/>`,
+    waves: (c) => `<path d="M0 4 Q2 0 4 4 T8 4" fill="none" stroke="${c}" stroke-width="1.2"/>`,
+    squares: (c) => `<rect x="1.5" y="1.5" width="5" height="5" fill="none" stroke="${c}" stroke-width="1.2"/>`,
+  };
+  FX.BORDER_ART = Object.keys(MOTIF);
+  // Publisher's 164 built-in BorderArt styles live in borderart-catalog.js (large), loaded the first time they are needed
+  FX.loadBorderCatalog = () => {
+    if (window.PSBA) return Promise.resolve(window.PSBA);
+    if (FX._baLoading) return FX._baLoading;
+    return (FX._baLoading = new Promise((res) => {
+      const sc = document.createElement('script'); sc.src = 'borderart-catalog.js';
+      sc.onload = () => res(window.PSBA || []); sc.onerror = () => res([]);
+      document.head.appendChild(sc);
+    }));
+  };
+  FX.catalogBorderArt = (e, color) => ({ type: 'pub', cat: true, name: e.n, svg: e.v, slice: e.c, repeatH: e.h ? 'round' : 'stretch', repeatV: e.w ? 'round' : 'stretch', size: e.s || 12, color: color || null });
+  FX.catalogThumb = (e) => 'data:image/svg+xml;utf8,' + encodeURIComponent(e.v);
+
+  /** BorderArt picker: a searchable gallery of all the styles (like Publisher's BorderArt dialog). pick(art|null) is called on choice. */
+  FX.borderArtPicker = (current, pick) => {
+    const el = (tag, css, txt) => { const n = document.createElement(tag); if (css) n.style.cssText = css; if (txt != null) n.textContent = txt; return n; };
+    const back = el('div', 'position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:99999;display:flex;align-items:center;justify-content:center');
+    const box = el('div', 'background:#fff;border-radius:8px;width:min(860px,94vw);height:min(640px,88vh);display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,.4);font:13px Segoe UI,sans-serif');
+    const head = el('div', 'display:flex;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid #ddd');
+    head.appendChild(el('b', 'font-size:15px', 'BorderArt'));
+    const q = el('input', 'flex:1;padding:5px 8px;border:1px solid #bbb;border-radius:4px'); q.placeholder = 'Search styles'; head.appendChild(q);
+    const none = el('button', 'padding:4px 12px', 'No border art'); const close = el('button', 'padding:4px 12px', 'Close');
+    head.append(none, close);
+    const grid = el('div', 'flex:1;overflow:auto;padding:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;align-content:start');
+    box.append(head, grid); back.appendChild(box); document.body.appendChild(back);
+    const done = () => back.remove();
+    close.onclick = done; back.onmousedown = (e) => { if (e.target === back) done(); };
+    none.onclick = () => { done(); pick(null); };
+    q.focus();
+    const card = (label, imgUrl, onpick, sel) => {
+      const c = el('div', 'cursor:pointer;text-align:center;font-size:11px;padding:4px;border-radius:6px;border:2px solid ' + (sel ? '#2b7bd8' : 'transparent'));
+      const t = el('div', 'height:66px;margin:2px 6px 4px;box-sizing:border-box;border-style:solid;border-color:#888;background:#fff');
+      if (imgUrl) { t.style.borderWidth = '14px'; t.style.borderImage = imgUrl; } else t.style.borderWidth = '2px';
+      c.append(t, el('div', null, label)); c.onclick = () => { done(); onpick(); };
+      c.onmouseenter = () => { c.style.background = '#eef5ff'; }; c.onmouseleave = () => { c.style.background = ''; };
+      return c;
+    };
+    const fill = (list) => {
+      const f = q.value.trim().toLowerCase();
+      grid.textContent = '';
+      for (const m of FX.BORDER_ART) {
+        const nm = m[0].toUpperCase() + m.slice(1);
+        if (f && !nm.toLowerCase().includes(f)) continue;
+        const css = FX.borderArtCss({ borderArt: { type: m, color: '#444', size: 12 } });
+        grid.appendChild(card(nm, css && css.img, () => pick({ type: m, size: 12 }), current && current.type === m));
+      }
+      for (const e of list) {
+        if (f && !e.n.toLowerCase().includes(f)) continue;
+        grid.appendChild(card(e.n, `url("${FX.catalogThumb(e)}") ${e.c} ${e.h ? 'round' : 'stretch'} ${e.w ? 'round' : 'stretch'}`, () => pick(FX.catalogBorderArt(e)), current && current.name === e.n));
+      }
+    };
+    grid.appendChild(el('div', 'color:#666', 'Loading…'));
+    FX.loadBorderCatalog().then((list) => { fill(list); q.oninput = () => fill(list); });
+  };
+  FX.borderArtCss = (o) => {
+    const a = o.borderArt; if (!a || (!MOTIF[a.type] && a.type !== 'pub')) return null;
+    const c = a.color || o.stroke || '#000000';
+    if (a.type === 'pub') {   // a pattern read from the .pub file itself (its 8 pieces already laid out as a 3x3 picture)
+      if (!a.svg) return null;
+      const svg = a.cat && a.color ? a.svg.split('#000000').join(a.color) : a.svg;   // catalog patterns: the black parts take the chosen colour
+      return { width: (a.size || 12) + 'pt', img: `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}") ${a.slice || 100} ${a.repeatH || 'round'} ${a.repeatV || 'round'}` };
+    }
+    let cells = '';
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) if (!(i === 1 && j === 1)) cells += `<g transform='translate(${i * 8} ${j * 8})'>${MOTIF[a.type](c)}</g>`;
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'>${cells}</svg>`;
+    return { width: (a.size || 12) + 'pt', img: `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}") 8 round` };
+  };
+  // Pattern fills (Publisher's "Pattern" fill): a small repeating tile of two colours
+  const PAT = {
+    dots: (f) => `<circle cx="2" cy="2" r="1" fill="${f}"/><circle cx="6" cy="6" r="1" fill="${f}"/>`,
+    hLines: (f) => `<rect y="3" width="8" height="2" fill="${f}"/>`,
+    vLines: (f) => `<rect x="3" width="2" height="8" fill="${f}"/>`,
+    diagUp: (f) => `<path d="M-1 7 L1 9 M0 8 L8 0 M7 9 L9 7" stroke="${f}" stroke-width="1.4"/>`,
+    diagDown: (f) => `<path d="M-1 1 L1 -1 M0 0 L8 8 M7 -1 L9 1" stroke="${f}" stroke-width="1.4"/>`,
+    cross: (f) => `<rect y="3" width="8" height="2" fill="${f}"/><rect x="3" width="2" height="8" fill="${f}"/>`,
+    diagCross: (f) => `<path d="M0 0 L8 8 M8 0 L0 8" stroke="${f}" stroke-width="1.2"/>`,
+    checker: (f) => `<rect width="4" height="4" fill="${f}"/><rect x="4" y="4" width="4" height="4" fill="${f}"/>`,
+    light: (f) => `<rect width="1" height="1" fill="${f}"/><rect x="4" y="4" width="1" height="1" fill="${f}"/>`,
+    dark: (f) => `<rect width="8" height="8" fill="${f}"/><rect x="0" y="0" width="3" height="3" fill="__bg"/><rect x="4" y="4" width="3" height="3" fill="__bg"/>`,
+  };
+  FX.PATTERNS = Object.keys(PAT);
+  FX.patternSvg = (p) => {
+    const fg = p.fg || '#000000', bg = p.bg || '#ffffff';
+    const inner = (PAT[p.type] || PAT.dots)(fg).replace(/__bg/g, bg);
+    return `<rect width="8" height="8" fill="${bg}"/>${inner}`;
+  };
+  FX.patternCss = (p) => ({ backgroundImage: `url("data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'>${FX.patternSvg(p)}</svg>`)}")`, backgroundSize: '8px 8px', backgroundRepeat: 'repeat', backgroundColor: p.bg || '#ffffff' });
   FX.shapePaint = (o, doc) => {
+    if (o.fillPattern) { const id = sid(o, 'pt'); return { defs: `<pattern id="${id}" patternUnits="userSpaceOnUse" width="8" height="8">${FX.patternSvg(o.fillPattern)}</pattern>`, fill: `url(#${id})` }; }
     if (o.fillImage && o.fillTile && doc && doc.assets && doc.assets[o.fillImage]) {
       const id = sid(o, 'p');
       return { defs: `<pattern id="${id}" patternUnits="userSpaceOnUse" width="${PS.round(o.fillTile.w, 2)}" height="${PS.round(o.fillTile.h, 2)}"><image href="${PS.assetUrl(doc, o.fillImage)}" width="${PS.round(o.fillTile.w, 2)}" height="${PS.round(o.fillTile.h, 2)}" preserveAspectRatio="none"/></pattern>`, fill: `url(#${id})` };

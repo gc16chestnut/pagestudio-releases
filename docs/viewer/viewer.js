@@ -1,5 +1,5 @@
-// PageStudio Viewer — shows Page Studio (.pgs) and Microsoft Publisher (.pub) publications on Android.
-// Pages are drawn by the same code Page Studio for Windows uses (core.js, effects.js, pubbridge.js).
+// PageStudio Viewer — shows PageStudio (.pgs) and Microsoft Publisher (.pub) publications on Android.
+// Pages are drawn by the same code PageStudio for Windows uses (core.js, effects.js, pubbridge.js).
 'use strict';
 (function () {
   const V = (window.Viewer = {});
@@ -136,7 +136,7 @@
       const land = r.w && r.h && r.w > r.h;
       const star = h('button', { class: 'r-star' + (r.pinned ? ' on' : ''), 'aria-label': r.pinned ? 'Unpin' : 'Pin', html: ic(r.pinned ? 'starOn' : 'star') });
       const item = h('button', { class: 'r-item' },
-        h('div', { class: 'r-thumb' + (land ? ' land' : '') }, h('span', { class: 'badge ' + (r.kind || '') }, (r.kind || 'pgs').toUpperCase())),
+        h('img', { class: 'r-ico', src: 'file-' + (r.kind === 'pub' ? 'pub' : 'pgs') + '.png', alt: '', draggable: false }),
         h('div', { class: 'r-text' }, h('div', { class: 'r-name' }, (r.name || 'Publication').replace(/\.(pgs|pub|pagestudio)$/i, '')),
           h('div', { class: 'r-meta' }, [ago(r.when), r.pages ? r.pages + (r.pages === 1 ? ' page' : ' pages') : null, r.source].filter(Boolean).join(' · '))),
         star);
@@ -217,13 +217,13 @@
 
   async function openBytes(buf, name, info = {}) {
     const kind = kindOf(buf, name);
-    if (!kind) throw new Error('This doesn’t look like a Page Studio (.pgs) or Publisher (.pub) file.');
+    if (!kind) throw new Error('This doesn’t look like a PageStudio (.pgs) or Publisher (.pub) file.');
     let doc, notes = [];
     if (kind === 'pgs') {
       busy(true, 'Reading ' + name + '…');
       const text = new TextDecoder('utf-8').decode(buf);
       doc = JSON.parse(text);
-      if (!doc || doc.format !== 'pagestudio') throw new Error('This isn’t a Page Studio file.');
+      if (!doc || doc.format !== 'pagestudio') throw new Error('This isn’t a PageStudio file.');
       PS.normalizeDoc(doc);
     } else {
       busy(true, 'Reading the Publisher file…');
@@ -256,8 +256,8 @@
     $('home').hidden = true; $('scroller').hidden = false; $('pagechip').hidden = false;
     $('t-name').textContent = name.replace(/\.(pgs|pub|pagestudio)$/i, '');
     const pg = doc.page;
-    $('t-sub').textContent = `${kind === 'pub' ? 'Publisher' : 'Page Studio'} · ${fmtIn(pg.width)} × ${fmtIn(pg.height)} in · ${doc.pages.length} page${doc.pages.length === 1 ? '' : 's'}`;
-    // Handwriting written in Page Studio comes inside the file; get its letters ready while the pages draw
+    $('t-sub').textContent = `${kind === 'pub' ? 'Publisher' : 'PageStudio'} · ${fmtIn(pg.width)} × ${fmtIn(pg.height)} in · ${doc.pages.length} page${doc.pages.length === 1 ? '' : 's'}`;
+    // Handwriting written in PageStudio comes inside the file; get its letters ready while the pages draw
     if (window.HW && HW.idsInDoc(doc).size) HW.prepare(doc).catch(() => {});
     renderPages();
     $('scroller').scrollTop = 0; $('scroller').scrollLeft = 0;
@@ -612,7 +612,7 @@
     const missing = S.fonts.filter(f => f.status === 'missing').length;
     const kv = h('div', { class: 'kv' },
       h('div', { class: 'k' }, 'File'), h('div', null, S.name),
-      h('div', { class: 'k' }, 'Kind'), h('div', null, S.kind === 'pub' ? 'Microsoft Publisher publication' : 'Page Studio publication'),
+      h('div', { class: 'k' }, 'Kind'), h('div', null, S.kind === 'pub' ? 'Microsoft Publisher publication' : 'PageStudio publication'),
       h('div', { class: 'k' }, 'Page size'), h('div', null, `${fmtIn(pg.width)} × ${fmtIn(pg.height)} in (${pg.width > pg.height ? 'landscape' : 'portrait'})`),
       h('div', { class: 'k' }, 'Pages'), h('div', null, String(doc.pages.length)),
       h('div', { class: 'k' }, 'Items'), h('div', null, `${objs} (${pics} picture${pics === 1 ? '' : 's'})`),
@@ -648,7 +648,7 @@
   function showAbout() {
     const v = N && N.version ? N.version() : '1.0.0';
     sheet('About', h('div', null,
-      h('p', { class: 'note' }, `PageStudio Viewer ${v} — made for Bible Baptist Church, Ashtabula, Ohio. It shows Page Studio (.pgs) and Microsoft Publisher (.pub) publications made with Page Studio for Windows; to change one, open it on the PC.`),
+      h('p', { class: 'note' }, `PageStudio Viewer ${v} — made for Bible Baptist Church, Ashtabula, Ohio. It shows PageStudio (.pgs) and Microsoft Publisher (.pub) publications made with PageStudio for Windows; to change one, open it on the PC.`),
       h('p', { class: 'note' }, 'Look-alike fonts: Liberation (Red Hat) and Carlito / Caladea (Google), under the SIL Open Font License. Clip art drawing: rtf.js (MIT).')));
   }
   function showMore() {
@@ -683,7 +683,7 @@
   async function printDoc() {
     const missing = S.fonts.filter(f => f.status === 'missing');
     if (missing.length) {
-      const go = await dialog('Print with substitute fonts?', `${missing.map(f => f.name).join(', ')} ${missing.length === 1 ? 'isn’t' : 'aren’t'} on this device, so similar fonts will be used. The printout may look a little different from the PC — for the exact look, print it from Page Studio on the computer.`,
+      const go = await dialog('Print with substitute fonts?', `${missing.map(f => f.name).join(', ')} ${missing.length === 1 ? 'isn’t' : 'aren’t'} on this device, so similar fonts will be used. The printout may look a little different from the PC — for the exact look, print it from PageStudio on the computer.`,
         [{ label: 'Cancel', value: false }, { label: 'Print anyway', primary: true, value: true }]);
       if (!go) return;
     }

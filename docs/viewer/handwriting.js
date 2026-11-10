@@ -1,4 +1,4 @@
-// Page Studio — Handwriting: writes a text box's text in a person's own handwriting.
+// PageStudio — Handwriting: writes a text box's text in a person's own handwriting.
 //
 // How it works (the approach of "My Text in Your Handwriting", Haines et al., UCL 2016, done for boxed sample sheets):
 //  • A handwriting profile holds real letters cut from the person's scanned sheets — several of each letter, letter

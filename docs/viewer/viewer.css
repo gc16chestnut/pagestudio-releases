@@ -73,8 +73,6 @@ body.fullscreen #bar, body.fullscreen #findbar, body.fullscreen #fontwarn { disp
 .r-star.on { color: #d79b00; }
 .r-star.on .ico { fill: currentColor; }
 .empty { text-align: center; color: var(--ink-3); padding: 18px 10px; font-size: 14px; }
-.tip { margin: 18px 4px 0; padding: 14px 16px; border-radius: 12px; background: var(--card); border: 1px dashed var(--line); color: var(--ink-2); font-size: 13.5px; line-height: 1.45; }
-.tip b { color: var(--ink); }
 
 /* ------------------------------------------------------------------ pages */
 #scroller { flex: 1; overflow: auto; background: var(--work); -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; position: relative; }

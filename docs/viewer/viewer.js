@@ -648,8 +648,8 @@
   function showAbout() {
     const v = N && N.version ? N.version() : '1.0.0';
     sheet('About', h('div', null,
-      h('p', { class: 'note' }, `PageStudio Viewer ${v} — made for Bible Baptist Church, Ashtabula, Ohio. It shows PageStudio (.pgs) and Microsoft Publisher (.pub) publications made with PageStudio for Windows; to change one, open it on the PC.`),
-      h('p', { class: 'note' }, 'Look-alike fonts: Liberation (Red Hat) and Carlito / Caladea (Google), under the SIL Open Font License. Clip art drawing: rtf.js (MIT).')));
+      h('p', { class: 'note' }, `PageStudio Viewer — Version ${String(v).replace(/^(\d+\.\d+)\.0*(\d+)$/, '$1 build $2')}. It shows PageStudio (.pgs) and Microsoft Publisher (.pub) publications; to change one, open it in PageStudio for Windows.`),
+      h('p', { class: 'note' }, 'Look-alike fonts: Liberation (Red Hat) and Carlito / Caladea (Google), under the SIL Open Font License. Clip art drawing: rtf.js (MIT). Publisher reader: based on the LibreOffice project’s libmspub (Mozilla Public License 2.0). Licenses and privacy policy: gc16chestnut.github.io/pagestudio-releases')));
   }
   function showMore() {
     const doc = !!S.doc;
@@ -763,7 +763,6 @@
     $('pc-prev').innerHTML = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 6-6 6 6 6"/></svg>';
     $('pc-next').innerHTML = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>';
     $('h-open').innerHTML = ic('open') + '<span>Open a publication</span>';
-    $('h-tip').innerHTML = '<b>Your network share:</b> tap <b>Open a publication</b>, choose <b>CX File Explorer</b>, and pick the file from the server.<br><br><b>From other apps:</b> in OneDrive, CX File Explorer, Files or Gmail you can also tap a .pgs or .pub file and choose <b>PageStudio Viewer</b> (pick <b>Always</b> to make it the one that opens them).';
     $('b-home').onclick = () => { if (S.doc) goHome(); };
     $('b-find').onclick = startFind;
     $('b-pages').onclick = showPages;

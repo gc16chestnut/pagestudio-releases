@@ -202,7 +202,7 @@
     squares: (c) => `<rect x="1.5" y="1.5" width="5" height="5" fill="none" stroke="${c}" stroke-width="1.2"/>`,
   };
   FX.BORDER_ART = Object.keys(MOTIF);
-  // Publisher's 164 built-in BorderArt styles live in borderart-catalog.js (large), loaded the first time they are needed
+  // PageStudio's 164 BorderArt styles (original drawings, tools/build-borderart-original.js) live in borderart-catalog.js, loaded the first time they are needed
   FX.loadBorderCatalog = () => {
     if (window.PSBA) return Promise.resolve(window.PSBA);
     if (FX._baLoading) return FX._baLoading;

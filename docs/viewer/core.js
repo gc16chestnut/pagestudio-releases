@@ -858,6 +858,30 @@
         el.style.outline = `${o.strokeWidth}pt ${/dash/.test(o.dash || '') ? 'dashed' : /dot/.test(o.dash || '') ? 'dotted' : 'solid'} ${o.stroke}`;
         el.style.outlineOffset = `-${o.strokeWidth}pt`;
       }
+      if (o.borders) {   // table cells: each side has its own line, centred on the cell's edge. A shared edge is drawn once
+        // (by the cell to its right / below), so thin lines aren't painted twice and darkened
+        const b = o.borders, wd = (k) => (b[k] && b[k].w) || 0;
+        const tid = o.tableId || o.groupId, list = opts.list || [];
+        const nb = (k) => list.some(c => c !== o && c.tableCell && (c.tableId || c.groupId) === tid && c.borders && c.borders[k === 'r' ? 'l' : 't'] && c.borders[k === 'r' ? 'l' : 't'].w &&
+          (k === 'r' ? Math.abs(c.x - (o.x + o.w)) < 0.6 && c.y < o.y + o.h - 0.6 && c.y + c.h > o.y + 0.6
+            : Math.abs(c.y - (o.y + o.h)) < 0.6 && c.x < o.x + o.w - 0.6 && c.x + c.w > o.x + 0.6));
+        const W = o.w, H = o.h, seg = [];
+        const ln = (k, x1, y1, x2, y2) => {
+          const w = wd(k); if (!w) return;
+          const d = b[k].dash || 'solid';
+          seg.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${b[k].c || '#000'}" stroke-width="${w}" stroke-linecap="${d === 'solid' ? 'square' : 'butt'}" stroke-dasharray="${dashArray(d, w)}"/>`);
+        };
+        ln('t', 0, 0, W, 0); ln('l', 0, 0, 0, H);
+        if (!nb('r')) ln('r', W, 0, W, H);
+        if (!nb('b')) ln('b', 0, H, W, H);
+        if (seg.length) {
+          const bd = document.createElement('div');
+          bd.className = 'ps-cell-borders';
+          bd.style.cssText = 'position:absolute;inset:0;pointer-events:none;overflow:visible';
+          bd.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="overflow:visible;display:block">${seg.join('')}</svg>`;
+          el.appendChild(bd);
+        }
+      }
       el.appendChild(textLayer(o, opts.list ? PS.exclusionsFor(o, opts.list) : null));
       if (o.hw && window.HW) HW.decorate(el, o, opts);
       return el;
@@ -1301,12 +1325,29 @@
   };
   // Effects (shadows, glow, soft edges, reflections, bevels, 3-D) and picture adjustments, from effects.js
   const renderObjectBase = PS.renderObject;
+  // A table's shadow / glow: drawn once, around the whole table, by its first cell
+  function tableBackdrop(el, o, list) {
+    const tid = o.tableId || o.groupId;
+    const cells = list.filter(c => c.tableCell && (c.tableId || c.groupId) === tid);
+    if (!cells.length || cells[0] !== o) return;
+    const x0 = Math.min(...cells.map(c => c.x)), y0 = Math.min(...cells.map(c => c.y)), x1 = Math.max(...cells.map(c => c.x + c.w)), y1 = Math.max(...cells.map(c => c.y + c.h));
+    const fx = o.tableFx, sh = [];
+    const rgba = (hex, a) => { const m = /^#?([0-9a-f]{6})$/i.exec(hex || ''); if (!m) return hex || 'rgba(0,0,0,' + a + ')'; const n = parseInt(m[1], 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+    if (fx.shadow) sh.push(`${fx.shadow.x || 0}pt ${fx.shadow.y || 0}pt ${fx.shadow.blur || 0}pt ${rgba(fx.shadow.color || '#000000', fx.shadow.opacity ?? 0.4)}`);
+    if (fx.glow) sh.push(`0 0 ${fx.glow.size || 8}pt ${(fx.glow.size || 8) / 3}pt ${rgba(fx.glow.color || '#f0c040', fx.glow.opacity ?? 0.6)}`);
+    if (!sh.length) return;
+    const d = document.createElement('div');
+    d.className = 'ps-table-fx';
+    d.style.cssText = `position:absolute;pointer-events:none;left:${x0 - o.x}pt;top:${y0 - o.y}pt;width:${x1 - x0}pt;height:${y1 - y0}pt;box-shadow:${sh.join(',')}`;
+    el.insertBefore(d, el.firstChild);
+  }
   PS.renderObject = (o, opts) => {
     const el = renderObjectBase(o, opts);
     if (o.borderArt && window.PSFX && PSFX.borderArtCss && o.type !== 'line') {
       const ba = PSFX.borderArtCss(o);
       if (ba) { const d = document.createElement('div'); Object.assign(d.style, { position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, boxSizing: 'border-box', pointerEvents: 'none', border: ba.width + ' solid transparent', borderImage: ba.img }); d.className = 'ps-borderart'; el.appendChild(d); }
     }
+    if (o.tableCell && o.tableFx && opts && opts.list) tableBackdrop(el, o, opts.list);
     if (o.hidden) el.style.display = 'none';        // hidden from the Selection pane: not drawn, not printed
     return window.PSFX && o.type !== 'line' ? PSFX.apply(el, o) : el;
   };

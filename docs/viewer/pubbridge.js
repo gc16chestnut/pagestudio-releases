@@ -293,6 +293,12 @@
           })));
           const last = notes.chains[notes.chains.length - 1];
           if (last && last.obj === null && last.at === out.length - 1) { last.obj = out[out.length - 1]; last.list = out; }
+          if (s.table) {   // a Publisher table cell: becomes a cell of a real PageStudio table
+            const cell = out[out.length - 1], tk = notes.tables || (notes.tables = {});
+            const tid = tk[s.table.key] || (tk[s.table.key] = PS.uid('g'));
+            Object.assign(cell, { tableId: tid, tableCell: { r: s.table.r, c: s.table.c, rows: s.table.rows, cols: s.table.cols }, borders: s.table.borders || {}, stroke: null, strokeWidth: 0 });
+            if (s.table.r === 0 && s.fill && s.fill.visible) cell.tableHead = true;
+          }
         } else if (s.kind === 'shape') {
           let tileProps = {};
           if (s.fillTile && images[s.fillTile.image]) {   // texture fill: tile at the picture's own size
@@ -330,6 +336,7 @@
         }
         const made = out.length > before ? out[out.length - 1] : null;
         if (made && s.groupId) made.groupId = s.groupId;
+        else if (made && made.tableId) made.groupId = made.tableId;
         if (made && s.shadow && made.type !== 'line') made.effects = Object.assign({}, made.effects || {}, shadowFx(s));
         // An object whose own layout flags are present but lack the wrap bits doesn't push text aside (e.g. a logo under a heading)
         if (made && s.borderArt) { made.borderArt = s.borderArt; if (s.borderArt.type === 'pub' && made.stroke) made.stroke = 'transparent'; }   // the pattern replaces the plain line; its width still insets the text

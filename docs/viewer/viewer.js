@@ -649,7 +649,8 @@
     const v = N && N.version ? N.version() : '1.0.0';
     sheet('About', h('div', null,
       h('p', { class: 'note' }, `PageStudio Viewer — Version ${String(v).replace(/^(\d+\.\d+)\.0*(\d+)$/, '$1 build $2')}. It shows PageStudio (.pgs) and Microsoft Publisher (.pub) publications; to change one, open it in PageStudio for Windows.`),
-      h('p', { class: 'note' }, 'Look-alike fonts: Liberation (Red Hat) and Carlito / Caladea (Google), under the SIL Open Font License. Clip art drawing: rtf.js (MIT). Publisher reader: based on the LibreOffice project’s libmspub (Mozilla Public License 2.0). Licenses and privacy policy: gc16chestnut.github.io/pagestudio-releases')));
+      h('p', { class: 'note' }, 'Look-alike fonts: Liberation (Red Hat) and Carlito / Caladea (Google), under the SIL Open Font License. Clip art drawing: rtf.js (MIT). Publisher reader: based on the LibreOffice project’s libmspub (Mozilla Public License 2.0). Licenses and privacy policy: gc16chestnut.github.io/pagestudio-releases')),
+      h('p', { class: 'note' }, 'Questions or problems: pagestudiosoftware@gmail.com'));
   }
   function showMore() {
     const doc = !!S.doc;

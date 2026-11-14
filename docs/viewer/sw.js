@@ -1,6 +1,6 @@
 // PageStudio Viewer (web version): works offline once opened. Files are served from the phone's cache first,
 // and refreshed from the web in the background, so a new version is used the next time the viewer opens.
-const CACHE = 'psv-v4';
+const CACHE = 'psv-v5';
 self.addEventListener('install', (e) => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', 'index.html', 'viewer.css', 'fonts.css', 'viewer.js', 'core.js', 'effects.js', 'icons.js', 'pubbridge.js', 'handwriting.js', 'lib/pubreader.bundle.js', 'lib/EMFJS.bundle.min.js', 'lib/WMFJS.bundle.min.js', 'icon.png', 'file-pgs.png', 'file-pub.png', 'manifest.webmanifest']).catch(() => {}))); });
 self.addEventListener('activate', (e) => { e.waitUntil(self.clients.claim()); });
 self.addEventListener('fetch', (e) => {

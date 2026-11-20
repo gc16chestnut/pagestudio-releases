@@ -28,6 +28,19 @@
   "offers": {"@type": "Offer", "price": "39.99", "priceCurrency": "USD", "availability": "https://schema.org/InStock", "url": "https://apps.microsoft.com/detail/9NCLVC0K6M72"}
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "PageStudio in 30 seconds",
+  "description": "A quick look at PageStudio, a Windows desktop publishing app with a familiar Publisher-style layout. It opens .pub files, does mail merge, and writes your text in your own handwriting.",
+  "thumbnailUrl": "https://gc16chestnut.github.io/pagestudio-releases/video/promo-poster.jpg",
+  "uploadDate": "2026-11-20T08:00:00-05:00",
+  "duration": "PT30S",
+  "contentUrl": "https://gc16chestnut.github.io/pagestudio-releases/video/PageStudio-Promo.mp4",
+  "embedUrl": "https://gc16chestnut.github.io/pagestudio-releases/#video"
+}
+</script>
 <style>
 :root{--ink:#14242a;--muted:#56686e;--accent:#0f6b6f;--accent2:#0b5256;--soft:#eef5f5;--bg:#ffffff;--line:#d9e3e5;--card:#ffffff}
 @media (prefers-color-scheme:dark){:root{--ink:#e7f0f1;--muted:#9fb3b7;--accent:#5fd0c8;--accent2:#8fe3dc;--soft:#12272c;--bg:#0d1b1f;--line:#24393e;--card:#112329}}
@@ -79,6 +92,7 @@ h2{font-size:clamp(25px,3.4vw,34px);margin:0 0 10px;text-align:center}
 details{border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:10px 0;background:var(--card)}
 summary{cursor:pointer;font-weight:600}
 details p{margin:10px 0 0;color:var(--muted)}
+.vid{max-width:1060px;margin:0 auto}.vid video{width:100%;height:auto;display:block;border-radius:12px;border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.12);background:#0b4f52}
 footer{border-top:1px solid var(--line);padding:30px 0 44px;color:var(--muted);font-size:14px;text-align:center}
 footer a{margin:0 8px}
 footer p{margin:8px 0}
@@ -88,7 +102,7 @@ footer p{margin:8px 0}
 
 <header class="top"><div class="wrap">
   <a class="brand" href="./"><img src="viewer/icon.png" alt="">PageStudio</a>
-  <nav><a href="#features">Features</a><a href="#handwriting">Handwriting</a><a href="#screenshots">Screenshots</a><a href="#price">Price</a><a href="#faq">FAQ</a></nav>
+  <nav><a href="#video">Video</a><a href="#features">Features</a><a href="#handwriting">Handwriting</a><a href="#screenshots">Screenshots</a><a href="#price">Price</a><a href="#faq">FAQ</a></nav>
 </div></header>
 
 <main>
@@ -102,6 +116,12 @@ footer p{margin:8px 0}
   <p class="price"><strong>$39.99</strong> one-time price (on sale, regularly <s>$49.99</s>). No subscription, no account, no ads.</p>
   <div class="shot"><img src="images/1.png" onerror="this.parentNode.remove()" alt="PageStudio editing a monthly calendar, with the ribbon, page list and scratch area"></div>
 </div></div>
+
+<section id="video"><div class="wrap">
+  <h2>See it in 30 seconds</h2>
+  <p class="sub">A quick look at the familiar layout, handwriting, mail merge and more.</p>
+  <div class="vid"><video controls preload="metadata" playsinline poster="video/promo-poster.jpg"><source src="video/PageStudio-Promo.mp4" type="video/mp4">Your browser can't play this video. <a href="video/PageStudio-Promo.mp4">Download it here.</a></video></div>
+</div></section>
 
 <section id="features" class="alt"><div class="wrap">
   <h2>Everything you used Publisher for</h2>

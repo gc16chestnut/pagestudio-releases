@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://gc16chestnut.github.io/pagestudio-releases/</loc><lastmod>2026-11-20</lastmod></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://gc16chestnut.github.io/pagestudio-releases/</loc>
+    <lastmod>2026-11-20</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://gc16chestnut.github.io/pagestudio-releases/video/promo-poster.jpg</video:thumbnail_loc>
+      <video:title>PageStudio in 30 seconds – a Publisher alternative that writes in your handwriting</video:title>
+      <video:description>A quick look at PageStudio, a Windows desktop publishing app with a familiar Publisher-style layout. It opens .pub files, does mail merge, and writes your text in your own handwriting. 15-day free trial in the Microsoft Store.</video:description>
+      <video:content_loc>https://gc16chestnut.github.io/pagestudio-releases/video/PageStudio-Promo.mp4</video:content_loc>
+      <video:duration>30</video:duration>
+      <video:publication_date>2026-11-20T08:00:00-05:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+    <image:image><image:loc>https://gc16chestnut.github.io/pagestudio-releases/images/1.png</image:loc></image:image>
+    <image:image><image:loc>https://gc16chestnut.github.io/pagestudio-releases/images/2.png</image:loc></image:image>
+    <image:image><image:loc>https://gc16chestnut.github.io/pagestudio-releases/images/3.png</image:loc></image:image>
+  </url>
   <url><loc>https://gc16chestnut.github.io/pagestudio-releases/privacy.html</loc><lastmod>2026-11-20</lastmod></url>
 </urlset>
